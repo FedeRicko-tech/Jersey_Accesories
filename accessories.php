@@ -64,7 +64,7 @@ $accessories = [
     'image' => 'image/LFC.png',
     'gallery_images' => [
       'image/LFC.png',
-      '',
+      'image/LFC1.png',
       '',
     ],
     'colors' => ['Grey', 'Black']
@@ -77,7 +77,7 @@ $accessories = [
     'image' => 'image/persebaya.png',
     'gallery_images' => [
       'image/persebaya.png',
-      '',
+      'image/persebaya1.png',
       '',
     ],
     'colors' => ['Green', 'Black', 'White']
@@ -87,9 +87,9 @@ $accessories = [
     'name' => 'Water Bottle',
     'category' => 'FC Barcelona',
     'price' => '16.19',
-    'image' => 'image/botol.jpg',
+    'image' => 'image/botol1.png',
     'gallery_images' => [
-      'image/botol.jpg',
+      'image/botol1.png',
       'image/botol2.png',
       '',
     ],
@@ -159,9 +159,24 @@ $categories = array_unique(array_column($accessories, 'category'));
             <button class="btn btn-link text-dark me-3">
               <i class="bi bi-search"></i>
             </button>
-            <button class="btn btn-link text-dark me-3">
-              <i class="bi bi-person"></i>
-            </button>
+
+<?php if (isset($_SESSION['username'])): ?>
+  <div class="dropdown me-3">
+<button class="btn btn-link text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <i class="bi bi-person"></i>
+</button>
+
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="profil.php">Profil</a></li>
+      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+    </ul>
+  </div>
+<?php else: ?>
+  <a href="login.php" class="btn btn-link text-dark me-3">
+    <i class="bi bi-person"></i>
+  </a>
+<?php endif; ?>
+
             <button class="btn btn-link text-dark position-relative">
               <i class="bi bi-cart"></i>
               <span
@@ -408,5 +423,3 @@ $categories = array_unique(array_column($accessories, 'category'));
   </script>
   <script src="js/script.js"></script>
 </body>
-
-</html>

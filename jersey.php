@@ -179,9 +179,24 @@ sort($sizes);
             <button class="btn btn-link text-dark me-3">
               <i class="bi bi-search"></i>
             </button>
-            <button class="btn btn-link text-dark me-3">
-              <i class="bi bi-person"></i>
-            </button>
+
+<?php if (isset($_SESSION['username'])): ?>
+  <div class="dropdown me-3">
+<button class="btn btn-link text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <i class="bi bi-person"></i>
+</button>
+
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="profil.php">Profil</a></li>
+      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+    </ul>
+  </div>
+<?php else: ?>
+  <a href="login.php" class="btn btn-link text-dark me-3">
+    <i class="bi bi-person"></i>
+  </a>
+<?php endif; ?>
+
             <button class="btn btn-link text-dark position-relative">
               <i class="bi bi-cart"></i>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
@@ -362,5 +377,3 @@ sort($sizes);
   </script>
   <script src="js/script.js"></script>
 </body>
-
-</html>
