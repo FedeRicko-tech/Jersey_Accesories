@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $error = "Username atau email sudah digunakan.";
     } else {
       $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-      $insert = mysqli_query($koneksi, "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashedPassword')");
+      $insert = mysqli_query($koneksi, "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$hashedPassword', 'user')");
 
       if ($insert) {
         $success = "Registrasi berhasil. <a href='login.php'>";

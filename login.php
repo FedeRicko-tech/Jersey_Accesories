@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($username === '' || $password === '') {
     $error = "Username dan password wajib diisi.";
   } else {
-
     $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username = '$username'");
     
     if ($query && mysqli_num_rows($query) === 1) {
@@ -19,7 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       if (password_verify($password, $user['password'])) {
         $_SESSION['username'] = $user['username'];
-        header("Location: index.php"); 
+        $_SESSION['role'] = $user['role'];
+
+        if ($user['role'] === 'admin') {
+          header("Location: admin/admin_dashbord.php");
+        } else {
+          header("Location: index.php");
+        }
         exit();
       } else {
         $error = "Password salah.";
@@ -30,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

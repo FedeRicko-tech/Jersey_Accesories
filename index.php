@@ -1,56 +1,129 @@
 <?php
-
+require_once 'koneksi.php';
 session_start();
 $pageTitle = "Jersey Store - Premium Sports Jerseys & Accessories";
+$testimonials = [];
 
-$featuredProducts = [
-  [
-    'name' => 'Premium Jersey',
-    'description' => 'Official Jersey Retro',
-    'price' => '94.99',
-    'image' => 'image/L1.png',
-    'link' => 'jersey.php'
-  ],
-  [
-    'name' => 'Premium Jersey',
-    'description' => 'Official Jersey Retro',
-    'price' => '94.99',
-    'image' => 'image/bayern1.png',
-    'link' => 'jersey.php'
-  ],
-  [
-    'name' => 'Premium Accessories',
-    'description' => 'Official Team Accessories',
-    'price' => '150.00',
-    'image' => 'image/madrid1.png',
-    'link' => 'jersey.php'
-  ],
-  [
-    'name' => 'Premium Accessories',
-    'description' => 'Official Team Accessories',
-    'price' => '37.79',
-    'image' => 'image/milan.png',
-    'link' => 'accessories.php'
-  ]
-];
 
-$testimonials = [
-  [
-    'quote' => 'The quality of the jersey is exceptional. The delivery is fast and the customer service is very good!',
-    'author' => 'Iqbal Habibi',
-    'rating' => 5
-  ],
-  [
-    'quote' => 'I have ordered several times and have never been disappointed. The products are genuine at very affordable prices.',
-    'author' => 'Rizki Alvian',
-    'rating' => 5
-  ],
-  [
-    'quote' => 'A very diverse selection of accessories. The delivery was a bit late, but the product is truly worth the wait',
-    'author' => 'Hegel Pidela',
-    'rating' => 4
-  ]
-];
+// $featuredProducts = [
+//   [
+//     'name' => 'Premium Jersey',
+//     'description' => 'Official Jersey Retro',
+//     'price' => '94.99',
+//     'image' => 'image/L1.png',
+//     'link' => 'jersey.php'
+    
+//   ],
+
+//   [
+//     'name' => 'Premium Jersey',
+//     'description' => 'Official Jersey Retro',
+//     'price' => '94.99',
+//     'image' => 'image/bayern1.png',
+//     'link' => 'jersey.php'
+//   ],
+//   [
+//     'name' => 'Premium Accessories',
+//     'description' => 'Official Team Accessories',
+//     'price' => '150.00',
+//     'image' => 'image/madrid1.png',
+//     'link' => 'jersey.php'
+//   ],
+//   [
+//     'name' => 'Premium Accessories',
+//     'description' => 'Official Team Accessories',
+//     'price' => '37.79',
+//     'image' => 'image/milan.png',
+//     'link' => 'accessories.php'
+//   ]
+// ];
+
+// $testimonials = [
+//   [
+//     'quote' => 'saya sangat puas dengan produk yang saya beli. Kualitasnya sangat baik dan sesuai dengan deskripsi di website.',
+//     'author' => 'Iqbal Habibi',
+//     'rating' => 5
+//   ],
+//   [
+//     'quote' => 'Saya telah memesan beberapa kali dan tidak pernah kecewa. Produk yang ditawarkan asli dengan harga yang sangat terjangkau.',
+//     'author' => 'Rizki Alvian',
+//     'rating' => 5
+//   ],
+//   [
+//     'quote' => 'Pilihan aksesori yang sangat beragam. Pengirimannya sedikit terlambat, tetapi produk ini benar-benar sepadan dengan penantiannya',
+//     'author' => 'Hegel Pidela',
+//     'rating' => 4
+//   ]
+// ];
+
+// // Ambil produk
+// $featuredProducts = [];
+// $resultProducts = mysqli_query($koneksi, "SELECT * FROM products");
+// while ($row = mysqli_fetch_assoc($resultProducts)) {
+//     $featuredProducts[] = $row;
+// }
+
+$testimonials = [];
+$resultTestimonials = mysqli_query($koneksi, "SELECT * FROM testimonials");
+while ($row = mysqli_fetch_assoc($resultTestimonials)) {
+    $testimonials[] = $row;
+}
+
+
+
+$featuredJerseys = [];
+$featuredAccessories = [];
+
+$resultJersey = mysqli_query($koneksi, "SELECT id, name, team AS brand, price, image, 'jersey' AS type FROM jerseys WHERE is_featured = 1 LIMIT 2");
+while ($row = mysqli_fetch_assoc($resultJersey)) {
+    $jersey_id = $row['id'];
+
+    $gallery = [];
+    $resG = mysqli_query($koneksi, "SELECT image_url FROM jersey_gallery_images WHERE jersey_id = $jersey_id");
+    while ($g = mysqli_fetch_assoc($resG)) {
+        $gallery[] = $g['image_url'];
+    }
+
+    $sizes = [];
+    $resS = mysqli_query($koneksi, "SELECT size FROM jersey_sizes WHERE jersey_id = $jersey_id");
+    while ($s = mysqli_fetch_assoc($resS)) {
+        $sizes[] = $s['size'];
+    }
+
+    $row['gallery_images'] = $gallery;
+    $row['sizes'] = $sizes;
+
+    $featuredJerseys[] = $row;
+}
+
+
+$resultAccessories = mysqli_query($koneksi, "SELECT id, name, category AS brand, price, image, 'accessory' AS type FROM accessories WHERE is_featured = 1 LIMIT 2");
+while ($row = mysqli_fetch_assoc($resultAccessories)) {
+    $accessory_id = $row['id'];
+
+    $gallery = [];
+    $resG = mysqli_query($koneksi, "SELECT image_path FROM accessory_gallery_images WHERE accessory_id = $accessory_id");
+    while ($g = mysqli_fetch_assoc($resG)) {
+        $gallery[] = $g['image_path'];
+    }
+
+    $colors = [];
+    $resC = mysqli_query($koneksi, "SELECT color FROM accessory_colors WHERE accessory_id = $accessory_id");
+    while ($c = mysqli_fetch_assoc($resC)) {
+        $colors[] = $c['color'];
+    }
+
+    $row['gallery_images'] = $gallery;
+    $row['colors'] = $colors;
+
+    $featuredAccessories[] = $row;
+}
+
+
+
+$featuredProducts = array_merge($featuredJerseys, $featuredAccessories);
+
+
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
@@ -68,58 +141,11 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 </head>
 
 <body>
-  <header class="sticky-top">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-      <div class="container">
-        <a class="navbar-brand fw-bold fs-4" href="index.php">Legacy Sportwear</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" href="index.php">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link <?php echo ($currentPage == 'jersey.php') ? 'active' : ''; ?>" href="jersey.php">Jerseys</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link <?php echo ($currentPage == 'accessories.php') ? 'active' : ''; ?>" href="accessories.php">Accessories</a>
-            </li>
-          </ul>
-          <div class="d-flex align-items-center">
-            <button class="btn btn-link text-dark me-3">
-              <i class="bi bi-search"></i>
-            </button>
+<?php
+require_once 'navbar.php';
+?>
             
-<?php if (isset($_SESSION['username'])): ?>
-  <div class="dropdown me-3">
-<button class="btn btn-link text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-  <i class="bi bi-person"></i>
-</button>
 
-    <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="profil.php">Profil</a></li>
-      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-    </ul>
-  </div>
-<?php else: ?>
-  <a href="login.php" class="btn btn-link text-dark me-3">
-    <i class="bi bi-person"></i>
-  </a>
-<?php endif; ?>
-
-            <a href="cart.php" class="btn btn-link text-dark position-relative">
-              <i class="bi bi-cart fs-5"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                0
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </header>
 
   <main>
     <section class="hero-section py-5">
@@ -173,26 +199,41 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <section class="py-5 featured-products">
       <div class="container py-4">
         <h2 class="text-center fw-bold mb-5">Featured Products</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-          <?php foreach ($featuredProducts as $product): ?>
-            <div class="col">
-              <div class="card h-100 shadow-sm product-card">
-                <a href="<?php echo htmlspecialchars($product['link']); ?>" class="text-decoration-none">
-                  <img src="<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                  <div class="card-body">
-                    <h5 class="card-title fw-semibold text-dark"><?php echo htmlspecialchars($product['name']); ?></h5>
-                    <p class="card-text text-muted"><?php echo htmlspecialchars($product['description']); ?></p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="fw-bold text-primary fs-5">$<?php echo htmlspecialchars($product['price']); ?></span>
-                      <button class="btn btn-primary rounded-circle">
-                        <i class="bi bi-cart"></i>
-                      </button>
-                    </div>
-                  </div>
-                </a>
-              </div>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+  <?php foreach ($featuredProducts as $idx => $product): ?>
+    <div class="col">
+      <div class="card h-100 shadow-sm product-card featured-product-card"
+     style="cursor:pointer;"
+     data-bs-toggle="modal"
+     data-bs-target="#<?php echo $product['type'] === 'jersey' ? 'jerseyModal' : 'accessoryModal'; ?>"
+     data-<?php echo $product['type']; ?>-id="<?php echo $product['id']; ?>"
+     data-featured-idx="<?php echo $idx; ?>">
+
+        <a href="#" class="text-decoration-none">
+          <img src="<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold text-dark"><?php echo htmlspecialchars($product['name']); ?></h5>
+            <p class="card-text text-muted">
+              <?= isset($product['description']) ? htmlspecialchars($product['description']) : ''; ?>
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-primary fs-5">
+                Rp<?php echo number_format($product['price'], 0, ',', '.'); ?>
+              </span>
+              <button class="btn btn-primary rounded-circle" type="button">
+                <i class="bi bi-cart"></i>
+              </button>
             </div>
-          <?php endforeach; ?>
+          </div>
+        </a>
+      </div>
+    </div>
+  <?php endforeach; ?>
+</div>
+
+
+
+
         </div>
       </div>
     </section>
@@ -217,7 +258,34 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </div>
       </div>
     </section>
-  </main>
+
+    <!-- <div class="modal fade" id="featuredProductModal" tabindex="-1" aria-labelledby="featuredProductModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-4 mb-md-0">
+                <img id="featuredModalImage" src="https://placehold.co/600x600/eee/ccc?text=Product" class="img-fluid rounded" alt="Product Preview">
+              </div>
+              <div class="col-md-6">
+                <h2 id="featuredModalName" class="fw-bold mb-1">Product Name</h2>
+                <h3 id="featuredModalDesc" class="text-muted mb-4">Product Description</h3>
+                <p id="featuredModalPrice" class="fs-4 fw-bold text-primary mb-4">$00.00</p>
+                <div class="d-flex gap-3 p-5">
+                  <button class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-cart"></i> Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main> -->
 
   <footer class="pt-5 pb-3">
     <div class="container">
@@ -260,5 +328,32 @@ $currentPage = basename($_SERVER['PHP_SELF']);
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const featuredProducts = <?php echo json_encode($featuredProducts); ?>;
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.featured-product-card').forEach(function(card, idx) {
+        card.addEventListener('click', function(e) {
+          e.preventDefault();
+          const product = featuredProducts[idx];
+          document.getElementById('featuredModalImage').src = product.image;
+          document.getElementById('featuredModalImage').alt = product.name;
+          document.getElementById('featuredModalName').textContent = product.name;
+          document.getElementById('featuredModalDesc').textContent = product.description;
+          document.getElementById('featuredModalPrice').textContent = '$' + product.price;
+          var modal = new bootstrap.Modal(document.getElementById('featuredProductModal'));
+          modal.show();
+        });
+      });
+    });
+  </script>
+  <script>
+  const jerseyData = <?php echo json_encode($featuredJerseys); ?>;
+  const accessoryData = <?php echo json_encode($featuredAccessories); ?>;
+</script>
+
   <script src="js/script.js"></script>
+  <?php include 'modal_jersey.php'; ?>
+<?php include 'modal_accessories.php'; ?>
+
 </body>
+</html>
